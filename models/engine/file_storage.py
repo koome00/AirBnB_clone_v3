@@ -76,7 +76,7 @@ class FileStorage:
         """
         if cls is not None:
             key = cls.__name__ + "." + id
-            return self.__objects[key,]
+            return self.__objects[key]
             
     def count(self, cls=None):
         """
