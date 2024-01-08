@@ -8,7 +8,7 @@
 from api.v1.views import app_views
 from flask import jsonify
 from models import storage
-
+from models import amenity, city, state, place, review, user
 
 @app_views.route("/status")
 def status():
@@ -22,11 +22,13 @@ def stats():
     """
     Creates and endpoint that retrieves the number of each objects by type
     """
-    models = {'User': 'users', 'State': 'states',
-              'Review': 'reviews', 'Place': 'places',
-              'City': 'cities', 'Amenity': 'amenities'}
-
-    objs = {}
-    for key, value in models.items():
-        objs[value] = storage.count(key)
+    objs  = {
+        "amenities": storage.count(Amenity),
+        "cities": storage.count(City),
+        "places": storage.count(Place),
+        "reviews": storage.count(Review),
+        "states": storage.count(State),
+        "users": storage.count(User)
+        }
+    
     return jsonify(objs)
