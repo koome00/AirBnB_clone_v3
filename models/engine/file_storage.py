@@ -74,7 +74,8 @@ class FileStorage:
         Returns the object based on the class and its ID,
         or None if not found
         """
-        key = str(cls) + "." + str(id)
+        if cls is not None:
+            key = cls.__class__.__name__ + "." + id
         for k, value in self.__objects.items():
             if key == k:
                 return value
