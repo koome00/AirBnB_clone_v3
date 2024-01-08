@@ -81,7 +81,7 @@ class DBStorage:
         '''
         result = None
         try:
-            objs = self.__session.query(classes[cls]).all()
+            objs = self.__session.query(cls).all()
             for obj in objs:
                 if obj.id == id:
                     result = obj
