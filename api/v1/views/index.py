@@ -17,10 +17,16 @@ def status():
     '''
     return jsonify({'status': 'OK'})
 
-@app_views.route("/stats", strict_slashes=False)
+@app_views.route('/stats')
 def stats():
-    """ retrieves the number of each objects by type """
-    class_dict = {"Amenity": "amenities", "City": "cities", "Place": "places",
-                  "Review": "reviews", "State": "states", "User": "users"}
-    objs = {class_dict[cls]: storage.count(cls) for cls in class_dict}
+    """
+    Creates and endpoint that retrieves the number of each objects by type
+    """
+    models = {'User': 'users', 'State': 'states',
+              'Review': 'reviews', 'Place': 'places',
+              'City': 'cities', 'Amenity': 'amenities'}
+
+    objs = {}
+    for key, value in models.items():
+        objs[value] = storage.count(key)
     return jsonify(objs)
