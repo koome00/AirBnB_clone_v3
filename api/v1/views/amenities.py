@@ -65,21 +65,18 @@ def create_new():
     return jsonify(new_amenity.to_dict()), 201
 
 
-@app_views.route("/amenities/<amenity_id>", methods=['PUT'],
-                 strict_slashes=False)
-def update_amenity(amenity_id):
-    """
-    updates amenity object given its id
-    """
-    fields = request.get_json()
-    if not request.json():
-        return jsonify({'error': 'Not a JSON'})
-    amenity = storage.get(Amenity, amenity_id)
-    if amenity is None:
+@app_views.route('/amenities/<amenities_id>',
+                 methods=['PUT'], strict_slashes=False)
+def update_amenity(amenities_id):
+    '''
+        update existing amenity object
+    '''
+    if not request.get_json():
+        return jsonify({"error": "Not a JSON"}), 400
+    obj = storage.get(Amenity, amenities_id)
+    if obj is None:
         abort(404)
-
-    for key, value in fields.items():
-        if key not in ['id', 'updated_at', 'created_at']:
-            setattr(amenity, key, value)
-    amenity.save()
-    return jsonify(amenity.to_dict()), 200
+    obj_data = request.get_json()
+    obj.name = obj_data['name']
+    obj.save()
+    return jsonify(obj.to_dict()), 200
