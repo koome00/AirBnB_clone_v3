@@ -70,12 +70,13 @@ def update_amenity(amenity_id):
     """
     updates amenity object given its id
     """
+    if not request.json():
+        return jsonify({'error': 'Not a JSON'})
     amenity = storage.get(Amenity, amenity_id)
     if amenity is None:
         abort(404)
-    if not request.json():
-        return jsonify({'error': 'Not a JSON'})
-    fields = request.json
+    
+    fields = request.get_json()
     for key, value in fields.items():
         if key not in ['id', 'updated_at', 'created_at']:
             if hasattr(amenity, key):
