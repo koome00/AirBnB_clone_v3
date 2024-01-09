@@ -22,9 +22,10 @@ def get_amenities():
     for objs in storage.all(Amenity).values():
         amenities.append(objs.to_dict())
     return jsonify(amenities)
-    
 
-@app_views.route("amenities/<amenity_id>", methods=['GET'], strict_slashes=False)
+
+@app_views.route("amenities/<amenity_id>", methods=['GET'],
+                 strict_slashes=False)
 def get_amenities_id(amenity_id):
     """
     retrieve amenity object given id
@@ -64,7 +65,7 @@ def create_new():
     new_amenity = Amenity(**fields)
     new_amenity.save()
 
-    return jsonify(new_amenity.to_dict()), 201 
+    return jsonify(new_amenity.to_dict()), 201
     
 
 @app_views.route("/amenities/<amenity_id>", methods=['PUT'],
