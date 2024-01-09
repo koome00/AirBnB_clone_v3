@@ -63,7 +63,7 @@ def update_states_with_id(state_id):
         abort(404)
     for key, value in fields.items():
         if key not in ['id', 'updated_at', 'created_at']:
-            if hasattr(state, key):
+            if hasattr(State, key):
                 setattr(state, key, value)
     state.save()
     return make_response(jsonify(state.to_dict()), 200)
