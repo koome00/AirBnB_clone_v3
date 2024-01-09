@@ -59,7 +59,7 @@ def update_states_with_id(state_id):
     if state is None:
         abort(404)
     fields = request.get_json()
-    if request.json is None:
+    if not request.json:
         return jsonify({"error": "Not a JSON"}), 400
     for key, value in fields.items():
         if key not in ['id', 'updated_at', 'created_at']:
@@ -79,4 +79,5 @@ def delete_state(state_id):
     if state is None:
         abort(404)
     storage.delete(state)
+    storage.save()
     return jsonify({}), 200
