@@ -1,64 +1,90 @@
 #!/usr/bin/python3
-"""reviews"""
+""" Module containing Review View """
 from api.v1.views import app_views
-from flask import jsonify, Blueprint, make_response, abort, request
+from flask import jsonify, abort, request
 from models import storage
 from models.review import Review
-from models.place import Place
-from models.user import User
-from models.base_model import BaseModel
 
 
-@app_views.route('/places/<place_id>/reviews', methods=['GET', 'POST'],
+@app_views.route('/places/<string:place_id>/reviews', methods=['GET'],
                  strict_slashes=False)
-def all_reviews(place_id):
-    """list all reviews in place"""
-    output = []
-    place = storage.get(Place, place_id)
-    if place is None:
+def get_reviews(place_id):
+    """ Retrieves the list of all Review objects associated with a Place
+        object
+    """
+    place_obj = storage.get("Place", place_id)
+    if place_obj is None:
         abort(404)
-    if request.method == 'GET':
-        for onePlace in place.reviews:
-            output.append(onePlace.to_dict())
-        return (jsonify(output))
-    if request.method == 'POST':
-        data = request.get_json()
-        if not request.is_json:
-            abort(400, description="Not a JSON")
-        if 'user_id' not in request.json:
-            abort(400, description="Missing user_id")
-        user_id = data['user_id']
-        user = storage.get(User, user_id)
-        if user is None:
-            abort(404)
-        if 'text' not in request.json:
-            abort(400, description="Missing text")
-        data['place_id'] = place_id
-        review = Review(**data)
-        review.save()
-        return (jsonify(review.to_dict()), 201)
+    reviews = [review.to_dict() for review in place_obj.reviews]
+    return jsonify(reviews)
 
 
-@app_views.route('/reviews/<review_id>', methods=[
-                 'GET', 'PUT', 'DELETE'], strict_slashes=False)
-def a_review(review_id):
-    """list a review by id"""
-    review = storage.get(Review, review_id)
-    if review is None:
+@app_views.route('/reviews/<string:review_id>', methods=['GET'],
+                 strict_slashes=False)
+def get_review(review_id):
+    """ Retrieves a Review object based on `review_id`.
+    """
+    review_obj = storage.get("Review", review_id)
+    if review_obj is None:
         abort(404)
-    if request.method == 'GET':
-        output = review.to_dict()
-        return (jsonify(output))
-    if request.method == 'PUT':
-        data = request.get_json()
-        if not request.is_json:
-            abort(400, description="Not a JSON")
-        for key, value in data.items():
-            setattr(review, key, value)
-        review.save()
-        return (jsonify(review.to_dict()), 200)
-    if request.method == 'DELETE':
-        storage.delete(review)
-        storage.save()
-        result = make_response(jsonify({}), 200)
-        return result
+    return jsonify(review_obj.to_dict())
+
+
+@app_views.route('/reviews/<string:review_id>', methods=['DELETE'],
+                 strict_slashes=False)
+def delete_review(review_id):
+    """ Deletes a Review object based on `review_id`.
+    """
+    review_obj = storage.get("Review", review_id)
+    if review_obj is None:
+        abort(404)
+    review_obj.delete()
+    storage.save()
+    return jsonify({})
+
+
+@app_views.route('/places/<string:place_id>/reviews', methods=['POST'],
+                 strict_slashes=False)
+def add_review(place_id):
+    """ Creates a Review object to associate to a Place object with the HTTP
+        body request fields as the values to set the Review object with.
+    """
+    place_obj = storage.get("Place", place_id)
+    if place_obj is None:
+        abort(404)
+    if request.json is None:
+        return "Not a JSON", 400
+    fields = request.get_json()
+    u_id = fields.get('user_id')
+    if u_id is None:
+        return "Missing user_id", 400
+    if storage.get("User", u_id) is None:
+        abort(404)
+    if fields.get('text') is None:
+        return "Missing text", 400
+    fields["place_id"] = place_id
+    new_review = Review(**fields)
+    new_review.save()
+    """ May need to call `get` on new_user for all attributes to show """
+    return jsonify(new_review.to_dict()), 201
+
+
+@app_views.route('/reviews/<string:review_id>', methods=['PUT'],
+                 strict_slashes=False)
+def edit_review(review_id):
+    """ Edit a Review object using `review_id` and HTTP body request fields.
+
+    """
+    review_obj = storage.get("Review", review_id)
+    if review_obj is None:
+        abort(404)
+    if request.json is None:
+        return "Not a JSON", 400
+    fields = request.get_json()
+    for key in fields:
+        if key in ['id', 'user_id', 'place_id', 'created_at', 'update_at']:
+            continue
+        if hasattr(review_obj, key):
+            setattr(review_obj, key, fields[key])
+    review_obj.save()
+    return jsonify(review_obj.to_dict()), 200
