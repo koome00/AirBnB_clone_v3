@@ -55,15 +55,12 @@ def update_states_with_id(state_id):
     """
     Update state object
     """
-    if request.json is None:
-        return jsonify({"error": "Not a JSON"}), 400
-
-    fields = request.get_json()
     state = storage.get(State, state_id)
-
     if state is None:
         abort(404)
-
+    fields = request.get_json()
+    if request.json is None:
+        return jsonify({"error": "Not a JSON"}), 400
     for key, value in fields.items():
         if key not in ['id', 'updated_at', 'created_at']:
             if hasattr(state, key):
