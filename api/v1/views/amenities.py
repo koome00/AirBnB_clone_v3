@@ -50,19 +50,20 @@ def delete_obj(amenity_id):
     return jsonify({}), 200
 
 
-@app_views.route("/amenities", methods=['POST'], strict_slashes=False)
-def create_new():
-    """"
-    create new amenity object
-    """
+@app_views.route('/amenities', methods=['POST'], strict_slashes=False)
+def create_amenities():
+    '''
+        create new amenity obj
+    '''
     if not request.get_json():
-        return jsonify({'error': 'Not a JSON'}), 400
-    fields = request.get_json()
-    if 'name' not in fields:
-        return jsonify({'error': 'Missing name'}), 400
-    new_amenity = Amenity(**fields)
-    new_amenity.save()
-    return jsonify(new_amenity.to_dict()), 201
+        return jsonify({"error": "Not a JSON"}), 400
+    elif "name" not in request.get_json():
+        return jsonify({"error": "Missing name"}), 400
+    else:
+        obj_data = request.get_json()
+        obj = Amenity(**obj_data)
+        obj.save()
+        return jsonify(obj.to_dict()), 201
 
 
 @app_views.route('/amenities/<amenities_id>',
