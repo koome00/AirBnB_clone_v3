@@ -75,6 +75,10 @@ class FileStorage:
         or None if not found
         """
         if cls is not None:
+            if cls not in classes.values():
+                return None
+            if id not in [obj.id for obj in self.__objects.values()]:
+                return None
             key = cls.__name__ + "." + id
             if key in self.__objects:
                 return self.__objects[key]
