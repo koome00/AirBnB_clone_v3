@@ -46,6 +46,7 @@ def delete_obj(amenity_id):
     if amenity is None:
         abort(404)
     storage.delete(amenity)
+    storage.save()
     return jsonify({}), 200
 
 
@@ -70,13 +71,13 @@ def update_amenity(amenity_id):
     """
     updates amenity object given its id
     """
+    fields = request.get_json()
     if not request.json():
         return jsonify({'error': 'Not a JSON'})
     amenity = storage.get(Amenity, amenity_id)
     if amenity is None:
         abort(404)
-    
-    fields = request.get_json()
+
     for key, value in fields.items():
         if key not in ['id', 'updated_at', 'created_at']:
             if hasattr(amenity, key):
