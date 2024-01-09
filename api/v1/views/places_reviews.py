@@ -4,38 +4,39 @@ from api.v1.views import app_views
 from flask import jsonify, abort, request
 from models import storage
 from models.review import Review
+from models.place import Place
+from models.user import User
 
-
-@app_views.route('/places/<string:place_id>/reviews', methods=['GET'],
+@app_views.route('/places/<place_id>/reviews', methods=['GET'],
                  strict_slashes=False)
 def get_reviews(place_id):
     """ Retrieves the list of all Review objects associated with a Place
         object
     """
-    place_obj = storage.get("Place", place_id)
+    place_obj = storage.get(Place, place_id)
     if place_obj is None:
         abort(404)
     reviews = [review.to_dict() for review in place_obj.reviews]
     return jsonify(reviews)
 
 
-@app_views.route('/reviews/<string:review_id>', methods=['GET'],
+@app_views.route('/reviews/<review_id>', methods=['GET'],
                  strict_slashes=False)
 def get_review(review_id):
     """ Retrieves a Review object based on `review_id`.
     """
-    review_obj = storage.get("Review", review_id)
+    review_obj = storage.get(Review, review_id)
     if review_obj is None:
         abort(404)
     return jsonify(review_obj.to_dict())
 
 
-@app_views.route('/reviews/<string:review_id>', methods=['DELETE'],
+@app_views.route('/reviews/<review_id>', methods=['DELETE'],
                  strict_slashes=False)
 def delete_review(review_id):
     """ Deletes a Review object based on `review_id`.
     """
-    review_obj = storage.get("Review", review_id)
+    review_obj = storage.get(Review, review_id)
     if review_obj is None:
         abort(404)
     review_obj.delete()
@@ -49,7 +50,7 @@ def add_review(place_id):
     """ Creates a Review object to associate to a Place object with the HTTP
         body request fields as the values to set the Review object with.
     """
-    place_obj = storage.get("Place", place_id)
+    place_obj = storage.get(Place, place_id)
     if place_obj is None:
         abort(404)
     if request.json is None:
@@ -58,7 +59,7 @@ def add_review(place_id):
     u_id = fields.get('user_id')
     if u_id is None:
         return "Missing user_id", 400
-    if storage.get("User", u_id) is None:
+    if storage.get(User, u_id) is None:
         abort(404)
     if fields.get('text') is None:
         return "Missing text", 400
@@ -75,7 +76,7 @@ def edit_review(review_id):
     """ Edit a Review object using `review_id` and HTTP body request fields.
 
     """
-    review_obj = storage.get("Review", review_id)
+    review_obj = storage.get(Review, review_id)
     if review_obj is None:
         abort(404)
     if request.json is None:
