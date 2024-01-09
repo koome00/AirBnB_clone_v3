@@ -41,10 +41,10 @@ def create_states():
     post method for states
     """
     if request.json is None:
-        return "Not a JSON", 400
+        return jsonify({"error": "Not a JSON"}), 400
     fields = request.json
     if fields.get('name') is None:
-        return "Missing name", 400
+        return jsonify({"error": "Missing name"}), 400
     new_state = State(**fields)
     new_state.save()
     return make_response(jsonify(new_state.to_dict()), 201)
@@ -56,7 +56,7 @@ def update_states_with_id(state_id):
     update state object
     """
     if request.json is None:
-        return "Not a JSON", 400
+        return jsonify({"error": "Not a JSON"}), 400
     fields = request.get_json()
     state = storage.get(State, state_id)
     if state is None:
