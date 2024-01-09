@@ -15,6 +15,7 @@ from models.user import User
 from models.place import Place
 from models.review import Review
 
+
 @app_views.route("/status")
 def status():
     '''
@@ -22,12 +23,13 @@ def status():
     '''
     return jsonify({'status': 'OK'})
 
+
 @app_views.route('/stats')
 def stats():
     """
     Creates and endpoint that retrieves the number of each objects by type
     """
-    objs  = {
+    objs = {
         "amenities": storage.count(Amenity),
         "cities": storage.count(City),
         "places": storage.count(Place),
@@ -35,5 +37,4 @@ def stats():
         "states": storage.count(State),
         "users": storage.count(User)
         }
-    
     return jsonify(objs)
