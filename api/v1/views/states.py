@@ -18,11 +18,10 @@ def get_states_using_id(state_id):
     """
     get state objects given state_id
     """
-    if state_id:
-        for objs in State.all.values():
-            if objs[id] == state_id:
-                return jsonify(objs.to_dict())
+    state = storage.get(State, state_id)
+    if state is None:
         abort(404)
+    return jsonify(state.to_dict)
 
 @app_views.route("/states", methods=['POST'], strict_slashes=False)
 def post_states():
@@ -38,7 +37,7 @@ def post_states():
     new_state.save()
     return make_response(jsonify(new_state.to_dict()), 201)
 
-@app_views.route("/state/<str:state_id", methods=["PUT"], strict_slashes=False)
+@app_views.route("/state/<str:state_id>", methods=["PUT"], strict_slashes=False)
 def update_states_with_id(state_id):
     """
     update state object
