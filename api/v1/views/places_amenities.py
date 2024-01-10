@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """ Module containing Review View """
 from api.v1.views import app_views
-from models.place import Place, 
+from models.place import Place
 from models.amenity import Amenity
 from flask import Flask, jsonify, abort, request
 from models import storage
