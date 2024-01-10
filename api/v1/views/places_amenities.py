@@ -14,7 +14,7 @@ def get_amenity(place_id):
     Retrieves the list of all Amenity objects of a Place
     """
     place = storage.get(Place, place_id)
-    ams =[]
+    ams = []
     if place is None:
         abort(404)
     else:
