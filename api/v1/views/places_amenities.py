@@ -21,4 +21,3 @@ def get_amenity(place_id):
         for k in place.amenities:
             ams.append(k.to_dict())
         return jsonify(ams)
-
