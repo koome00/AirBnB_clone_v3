@@ -22,18 +22,3 @@ def get_amenity(place_id):
             ams.append(k.to_dict())
         return jsonify(ams)
 
-
-@app_views.route("/places/<place_id>/amenities/<amenity_id>",
-                 methods=['DELETE'], strict_slashes=False)
-def delete_amenity(place_id, amenity_id):
-    place = storage.all(Place, place_id)
-    amenity = storage.all(Amenity, amenity_id)
-
-    if place is None or amenity is None:
-        abort(404)
-    if amenity not in place.amenities:
-        abort(404)
-    place.amenities.delete(amenity)
-    place.save()
-
-    return jsonify({}), 200
